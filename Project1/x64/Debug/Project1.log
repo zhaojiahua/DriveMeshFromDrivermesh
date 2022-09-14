@@ -1,0 +1,10 @@
+﻿  CVTest.cpp
+E:\AAA_myself\visualstudio2019\ImgTest\Project1\CVTest.cpp(47,45): warning C4267: “初始化”: 从“size_t”转换到“int”，可能丢失数据
+E:\AAA_myself\visualstudio2019\ImgTest\Project1\CVTest.cpp(66,27): warning C4244: “=”: 从“double”转换到“_Tp”，可能丢失数据
+          with
+          [
+              _Tp=uchar
+          ]
+E:\AAA_myself\visualstudio2019\ImgTest\Project1\CVTest.cpp(87,42): warning C4474: fprintf: 格式字符串中传递的参数太多
+E:\AAA_myself\visualstudio2019\ImgTest\Project1\CVTest.cpp(87,42): message : 占位符和其参数预计 0 可变参数，但提供的却是 1 参数
+  Project1.vcxproj -> E:\AAA_myself\visualstudio2019\ImgTest\Project1\x64\Debug\Project1.exe
