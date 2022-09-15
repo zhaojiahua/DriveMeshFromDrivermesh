@@ -78,7 +78,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>E:\BaiduNetdiskDownload\opencv\build\include;$(IncludePath)</IncludePath>
+    <IncludePath>E:\BaiduNetdiskDownload\opencv\build\include;E:\BaiduNetdiskDownload\eigen-git-mirror-3.3.4\Eigen;$(IncludePath)</IncludePath>
     <LibraryPath>E:\BaiduNetdiskDownload\opencv\build\x64\vc15\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
