@@ -8,36 +8,39 @@ using namespace std;
 
 int main()
 {
-	//Mat img = imread("testTEX8.png");//读取图片
+	//Mat img = imread("writetestpng3.png");//读取图片
 	//uint8_t* img_bytes = NULL;
-	////cout << img.total() * img.elemSize();
+	////cout << img.total() ;
 	//img_bytes = img.data;
 
 	////注意OpenCV读取图片的方式是从上往下按行读取像素,每次按顺序读取3个通道
 
-	//for (int i = 0; i < 3072; i++)
+	//for (int i = 524288; i < 1048576; i++)
 	//{
-	//	cout << (int)img_bytes[i] << " ";
+	//	if (img_bytes[i] != 0)
+	//	{
+	//		cout << (int)img_bytes[i] << " ";
+	//	}
 	//}
-	vector<vector<double>> Point_diffs;
+	/*vector<vector<double>> Point_diffs;
 	LoadDiffData("D:/UE5_Project/TTSAPro/AssetsFromOther/axPatDr50.txt", Point_diffs);
 	
-	CreateTextTo(Point_diffs, 1024, "writetestpng3.png");
+	CreateTextTo(Point_diffs, 1024, "writetestpng3.png");*/
 	
-	////提取驱动模型Dr的obj信息
-	//vector<vector<double>> vertexs_Dr = {};
-	//vector<vector<double>> normals_Dr = {};
-	//vector<vector<double>> uvs_Dr = {};
-	//vector<vector<int>> faces_vertexs_Dr = {};
-	//vector<vector<int>> faces_uvs_Dr = {};
-	//LoadObj("D:/UE5_Project/TTSAPro/AssetsFromOther/Dr.obj", vertexs_Dr, normals_Dr, uvs_Dr, faces_vertexs_Dr, faces_uvs_Dr);
-	////提取爱夏模型的obj信息
-	//vector<vector<double>> vertexs_Ax = {};
-	//vector<vector<double>> normals_Ax = {};
-	//vector<vector<double>> uvs_Ax = {};
-	//vector<vector<int>> faces_vertexs_Ax = {};
-	//vector<vector<int>> faces_uvs_Ax = {};
-	//LoadObj("D:/UE5_Project/TTSAPro/AssetsFromOther/aixia.obj", vertexs_Ax, normals_Ax, uvs_Ax, faces_vertexs_Ax, faces_uvs_Ax);
+	//提取驱动模型Dr的obj信息
+	vector<vector<double>> vertexs_Dr = {};
+	vector<vector<double>> normals_Dr = {};
+	vector<vector<double>> uvs_Dr = {};
+	vector<vector<int>> faces_vertexs_Dr = {};
+	vector<vector<int>> faces_uvs_Dr = {};		//注意这里得到的是UV索引
+	LoadObj("D:/UE5_Project/TTSAPro/AssetsFromOther/Dr.obj", vertexs_Dr, normals_Dr, uvs_Dr, faces_vertexs_Dr, faces_uvs_Dr);
+	//提取爱夏模型的obj信息
+	vector<vector<double>> vertexs_Ax = {};
+	vector<vector<double>> normals_Ax = {};
+	vector<vector<double>> uvs_Ax = {};
+	vector<vector<int>> faces_vertexs_Ax = {};
+	vector<vector<int>> faces_uvs_Ax = {};
+	LoadObj("D:/UE5_Project/TTSAPro/AssetsFromOther/aixia.obj", vertexs_Ax, normals_Ax, uvs_Ax, faces_vertexs_Ax, faces_uvs_Ax);
 
 	////计算所有的UV对应的空间坐标
 	//vector<vector<double>> AxPointAtDr = {};
@@ -65,15 +68,15 @@ uint8_t* MatToBytes(Mat image)
 
 void createAlphaMat(vector<vector<double>> inPoint_diffs,Mat& mat)
 {
-	//设置底色为纯黑
+	//设置底色为纯灰
 	for (int i = 0; i < mat.rows; ++i)
 	{
 		for (int j = 0; j < mat.cols; ++j)
 		{
 			Vec4b& rgba = mat.at<Vec4b>(i, j);
-			rgba[0] = 0;
-			rgba[1] = 0;
-			rgba[2] = 0;
+			rgba[0] = 127;
+			rgba[1] = 127;
+			rgba[2] = 127;
 			rgba[3] = 255;
 		}
 	}
@@ -83,9 +86,52 @@ void createAlphaMat(vector<vector<double>> inPoint_diffs,Mat& mat)
 		int pixelX = (1 - inPoint_diffs[i][1]) * mat.rows;
 		int pixelY = inPoint_diffs[i][0] * mat.cols;
 		Vec4b& rgba = mat.at<Vec4b>(pixelX, pixelY);
-		rgba[0] = inPoint_diffs[i][2];
-		rgba[1] = inPoint_diffs[i][3];
-		rgba[2] = inPoint_diffs[i][4];
+		rgba[0] = inPoint_diffs[i][3];
+		rgba[1] = inPoint_diffs[i][4];
+		rgba[2] = inPoint_diffs[i][2];
+	}
+}
+
+void createAlphaMat(vector<vector<double>> invertexs, vector<vector<double>> inuvs, vector<vector<int>> inface_vertindex, vector<vector<int>> inface_uvindex, Mat& mat)
+{
+	//设置底色为纯灰
+	for (int i = 0; i < mat.rows; ++i)
+	{
+		for (int j = 0; j < mat.cols; ++j)
+		{
+			Vec4b& rgba = mat.at<Vec4b>(i, j);
+			rgba[0] = 127;
+			rgba[1] = 127;
+			rgba[2] = 127;
+			rgba[3] = 255;
+		}
+	}
+	//上色(逐个面上色而不是逐点上色)
+	for (int i = 0; i < inface_vertindex.size(); i++)
+	{
+		//四边形面分割成两个三角形
+		for (int j = 0; j < inface_vertindex[i].size() - 2; j++)	//顶点数-2=面数
+		{
+			//先算出三个顶点的屏幕坐标和差值信息
+			//三角面的顶点索引
+			int vtxIndex0=inface_vertindex[i][0];
+			int vtxIndex1 = inface_vertindex[i][j+1];
+			int vtxIndex2 = inface_vertindex[i][j+2];
+			//三角面的UV索引
+			int uvIndex0 = inface_uvindex[i][0];
+			int uvIndex1 = inface_uvindex[i][j + 1];
+			int uvIndex2 = inface_uvindex[i][j + 2];
+			//三角面三个顶点世界空间坐标
+			vector<double> vtx0 = invertexs[vtxIndex0];
+			vector<double> vtx1 = invertexs[vtxIndex1];
+			vector<double> vtx2 = invertexs[vtxIndex2];
+			//三角面三个顶点uv空间坐标
+			vector<double> uv0 = inuvs[uvIndex0];
+			vector<double> uv1 = inuvs[uvIndex1];
+			vector<double> uv2 = inuvs[uvIndex2];
+
+		}
+		
 	}
 }
 
@@ -249,6 +295,14 @@ void LoadDiffData(string inpath, vector<vector<double>>& Point_diffs)
 		infile.close();
 		cout << "加载完毕" << endl;
 	}
+}
+
+vector<int> GetPixelCoord(int inWidth, int inHeight, vector<double> inUV)
+{
+	vector<int> outResult = { 0,0 };
+	outResult[0] = inUV[0] * inWidth;	//小数部分直接截断
+	outResult[0] = inUV[1] * inHeight;
+	return outResult;
 }
 
 
