@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <iostream>
 #include <vector>
 #include <sstream>
@@ -18,13 +18,19 @@ void createAlphaMat(vector<vector<double>> inPoint_diffs, class Mat& mat);
 void createAlphaMat(vector<vector<double>> invertexs, vector<vector<double>> inuvs, vector<vector<int>> inface_vertindex, vector<vector<int>> inface_uvindex, class Mat& mat);
 
 void CreateTextTo(vector<vector<double>> inPoint_diffs, int insize, string infilename);
+void CreateTextTo(vector<vector<double>> inPoint_diffs, vector<vector<double>> inuvs, vector<vector<int>> inface_vertindex, vector<vector<int>> inface_uvindex, int insize, string infilename);
 
 void LoadObj(string inpath, vector<vector<double>>& vectexs, vector<vector<double>>& normals, vector<vector<double>>& uvs, vector<vector<int>>& faces_vertexs, vector<vector<int>>& faces_uvs);
 
-vector<double> CalculateInterpolation(vector<vector<double>> invertexs, vector<vector<double>> inuvs, vector<vector<int>> inface_vertindex, vector<vector<int>> inface_uvindex, vector<double> inUV);//��һ��uvֵ,Ȼ���ж����uv�������ĸ�����,���ҵ�֮��˳��Ѳ�ֵ�������
+vector<double> CalculateInterpolation(vector<vector<double>> invertexs, vector<vector<double>> inuvs, vector<vector<int>> inface_vertindex, vector<vector<int>> inface_uvindex, vector<double> inUV);//´«Ò»¸öuvÖµ,È»ºóÅÐ¶ÏÕâ¸öuvÊÇÂäÔÚÄÄ¸öÃæÉÏ,²éÕÒµ½Ö®ºóË³±ã°Ñ²åÖµ¼ÆËã³öÀ´
 
 vector<double> CalculateAreaRatio(vector<double> uv0, vector<double> uv1, vector<double> uv2, vector<double> inUV);
+vector<double> CalculateAreaRatio(vector<int> pixel0, vector<int> pixel1, vector<int> pixel2, vector<int> inpixel);
 
 void LoadDiffData(string inpath, vector<vector<double>>& Point_diffs);
 
 vector<int> GetPixelCoord(int inWidth, int inHeight, vector<double> inUV);
+
+vector<int> GetTrianglePixelBoundingBox(vector<int>inpixel0, vector<int>inpixel1, vector<int>inpixel2);
+
+int Round(double inx);		//四舍五入函数

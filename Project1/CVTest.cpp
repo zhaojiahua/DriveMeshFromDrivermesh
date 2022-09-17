@@ -1,4 +1,4 @@
-
+ï»¿
 #include "CVTest.h"
 #include "cmath"
 
@@ -8,12 +8,12 @@ using namespace std;
 
 int main()
 {
-	//Mat img = imread("writetestpng3.png");//¶ÁÈ¡Í¼Æ¬
+	//Mat img = imread("writetestpng3.png");//Â¶ÃÃˆÂ¡ÃÂ¼Ã†Â¬
 	//uint8_t* img_bytes = NULL;
 	////cout << img.total() ;
 	//img_bytes = img.data;
 
-	////×¢ÒâOpenCV¶ÁÈ¡Í¼Æ¬µÄ·½Ê½ÊÇ´ÓÉÏÍùÏÂ°´ĞĞ¶ÁÈ¡ÏñËØ,Ã¿´Î°´Ë³Ğò¶ÁÈ¡3¸öÍ¨µÀ
+	////Ã—Â¢Ã’Ã¢OpenCVÂ¶ÃÃˆÂ¡ÃÂ¼Ã†Â¬ÂµÃ„Â·Â½ÃŠÂ½ÃŠÃ‡Â´Ã“Ã‰ÃÃÃ¹ÃÃ‚Â°Â´ÃÃÂ¶ÃÃˆÂ¡ÃÃ±Ã‹Ã˜,ÃƒÂ¿Â´ÃÂ°Â´Ã‹Â³ÃÃ²Â¶ÃÃˆÂ¡3Â¸Ã¶ÃÂ¨ÂµÃ€
 
 	//for (int i = 524288; i < 1048576; i++)
 	//{
@@ -22,19 +22,15 @@ int main()
 	//		cout << (int)img_bytes[i] << " ";
 	//	}
 	//}
-	/*vector<vector<double>> Point_diffs;
-	LoadDiffData("D:/UE5_Project/TTSAPro/AssetsFromOther/axPatDr50.txt", Point_diffs);
 	
-	CreateTextTo(Point_diffs, 1024, "writetestpng3.png");*/
-	
-	//ÌáÈ¡Çı¶¯Ä£ĞÍDrµÄobjĞÅÏ¢
+	//ÃŒÃ¡ÃˆÂ¡Ã‡Ã½Â¶Â¯Ã„Â£ÃÃDrÂµÃ„objÃÃ…ÃÂ¢
 	vector<vector<double>> vertexs_Dr = {};
 	vector<vector<double>> normals_Dr = {};
 	vector<vector<double>> uvs_Dr = {};
 	vector<vector<int>> faces_vertexs_Dr = {};
-	vector<vector<int>> faces_uvs_Dr = {};		//×¢ÒâÕâÀïµÃµ½µÄÊÇUVË÷Òı
+	vector<vector<int>> faces_uvs_Dr = {};		//Ã—Â¢Ã’Ã¢Ã•Ã¢Ã€Ã¯ÂµÃƒÂµÂ½ÂµÃ„ÃŠÃ‡UVÃ‹Ã·Ã’Ã½
 	LoadObj("D:/UE5_Project/TTSAPro/AssetsFromOther/Dr.obj", vertexs_Dr, normals_Dr, uvs_Dr, faces_vertexs_Dr, faces_uvs_Dr);
-	//ÌáÈ¡°®ÏÄÄ£ĞÍµÄobjĞÅÏ¢
+	//ÃŒÃ¡ÃˆÂ¡Â°Â®ÃÃ„Ã„Â£ÃÃÂµÃ„objÃÃ…ÃÂ¢
 	vector<vector<double>> vertexs_Ax = {};
 	vector<vector<double>> normals_Ax = {};
 	vector<vector<double>> uvs_Ax = {};
@@ -42,7 +38,12 @@ int main()
 	vector<vector<int>> faces_uvs_Ax = {};
 	LoadObj("D:/UE5_Project/TTSAPro/AssetsFromOther/aixia.obj", vertexs_Ax, normals_Ax, uvs_Ax, faces_vertexs_Ax, faces_uvs_Ax);
 
-	////¼ÆËãËùÓĞµÄUV¶ÔÓ¦µÄ¿Õ¼ä×ø±ê
+	vector<vector<double>> Point_diffs;
+	LoadDiffData("D:/UE5_Project/TTSAPro/AssetsFromOther/axPatDr50.txt", Point_diffs);
+
+	CreateTextTo(Point_diffs, uvs_Ax, faces_vertexs_Ax, faces_uvs_Ax, 1024, "writetestpng3.png");
+
+	////Â¼Ã†Ã‹Ã£Ã‹Ã¹Ã“ÃÂµÃ„UVÂ¶Ã”Ã“Â¦ÂµÃ„Â¿Ã•Â¼Ã¤Ã—Ã¸Â±Ãª
 	//vector<vector<double>> AxPointAtDr = {};
 	//for (auto i= uvs_Ax.begin();i != uvs_Ax.end();i++)
 	//{
@@ -62,13 +63,13 @@ uint8_t* MatToBytes(Mat image)
 {
 	int size = image.total() * image.elemSize();
 	uint8_t* bytes = new uint8_t[size];
-	std::memcpy(bytes, image.data, size * sizeof(uint8_t));//¿½±´×Ö½Úµ½ÄÚ´æÖĞ
+	std::memcpy(bytes, image.data, size * sizeof(uint8_t));//Â¿Â½Â±Â´Ã—Ã–Â½ÃšÂµÂ½Ã„ÃšÂ´Ã¦Ã–Ã
 	return bytes;
 };
 
 void createAlphaMat(vector<vector<double>> inPoint_diffs,Mat& mat)
 {
-	//ÉèÖÃµ×É«Îª´¿»Ò
+	//Ã‰Ã¨Ã–ÃƒÂµÃ—Ã‰Â«ÃÂªÂ´Â¿Â»Ã’
 	for (int i = 0; i < mat.rows; ++i)
 	{
 		for (int j = 0; j < mat.cols; ++j)
@@ -80,21 +81,21 @@ void createAlphaMat(vector<vector<double>> inPoint_diffs,Mat& mat)
 			rgba[3] = 255;
 		}
 	}
-	//ÉÏÉ«
+	//Ã‰ÃÃ‰Â«
 	for (int i = 0; i < inPoint_diffs.size(); i++)
 	{
-		int pixelX = (1 - inPoint_diffs[i][1]) * mat.rows;
-		int pixelY = inPoint_diffs[i][0] * mat.cols;
+		int pixelX = (1 - inPoint_diffs[i][4]) * mat.rows;
+		int pixelY = inPoint_diffs[i][3] * mat.cols;
 		Vec4b& rgba = mat.at<Vec4b>(pixelX, pixelY);
-		rgba[0] = inPoint_diffs[i][3];
-		rgba[1] = inPoint_diffs[i][4];
-		rgba[2] = inPoint_diffs[i][2];
+		rgba[0] = inPoint_diffs[i][1];
+		rgba[1] = inPoint_diffs[i][2];
+		rgba[2] = inPoint_diffs[i][0];
 	}
 }
 
-void createAlphaMat(vector<vector<double>> invertexs, vector<vector<double>> inuvs, vector<vector<int>> inface_vertindex, vector<vector<int>> inface_uvindex, Mat& mat)
+void createAlphaMat(vector<vector<double>> inPoint_diffs, vector<vector<double>> inuvs, vector<vector<int>> inface_vertindex, vector<vector<int>> inface_uvindex, Mat& mat)
 {
-	//ÉèÖÃµ×É«Îª´¿»Ò
+	//ç»™èƒŒæ™¯ä¸Šçº¯ç°è‰²
 	for (int i = 0; i < mat.rows; ++i)
 	{
 		for (int j = 0; j < mat.cols; ++j)
@@ -106,32 +107,61 @@ void createAlphaMat(vector<vector<double>> invertexs, vector<vector<double>> inu
 			rgba[3] = 255;
 		}
 	}
-	//ÉÏÉ«(Öğ¸öÃæÉÏÉ«¶ø²»ÊÇÖğµãÉÏÉ«)
+	//Ã‰ÃÃ‰Â«(Ã–Ã°Â¸Ã¶ÃƒÃ¦Ã‰ÃÃ‰Â«Â¶Ã¸Â²Â»ÃŠÃ‡Ã–Ã°ÂµÃ£Ã‰ÃÃ‰Â«)
 	for (int i = 0; i < inface_vertindex.size(); i++)
 	{
-		//ËÄ±ßĞÎÃæ·Ö¸î³ÉÁ½¸öÈı½ÇĞÎ
-		for (int j = 0; j < inface_vertindex[i].size() - 2; j++)	//¶¥µãÊı-2=ÃæÊı
+		//Ã‹Ã„Â±ÃŸÃÃÃƒÃ¦Â·Ã–Â¸Ã®Â³Ã‰ÃÂ½Â¸Ã¶ÃˆÃ½Â½Ã‡ÃÃ
+		for (int j = 0; j < inface_vertindex[i].size() - 2; j++)	//Â¶Â¥ÂµÃ£ÃŠÃ½-2=ÃƒÃ¦ÃŠÃ½
 		{
-			//ÏÈËã³öÈı¸ö¶¥µãµÄÆÁÄ»×ø±êºÍ²îÖµĞÅÏ¢
-			//Èı½ÇÃæµÄ¶¥µãË÷Òı
+			//ÃÃˆÃ‹Ã£Â³Ã¶ÃˆÃ½Â¸Ã¶Â¶Â¥ÂµÃ£ÂµÃ„Ã†ÃÃ„Â»Ã—Ã¸Â±ÃªÂºÃÂ²Ã®Ã–ÂµÃÃ…ÃÂ¢
+			//ÃˆÃ½Â½Ã‡ÃƒÃ¦ÂµÃ„Â¶Â¥ÂµÃ£Ã‹Ã·Ã’Ã½
 			int vtxIndex0=inface_vertindex[i][0];
 			int vtxIndex1 = inface_vertindex[i][j+1];
 			int vtxIndex2 = inface_vertindex[i][j+2];
-			//Èı½ÇÃæµÄUVË÷Òı
+			//ÃˆÃ½Â½Ã‡ÃƒÃ¦ÂµÃ„UVÃ‹Ã·Ã’Ã½
 			int uvIndex0 = inface_uvindex[i][0];
 			int uvIndex1 = inface_uvindex[i][j + 1];
 			int uvIndex2 = inface_uvindex[i][j + 2];
-			//Èı½ÇÃæÈı¸ö¶¥µãÊÀ½ç¿Õ¼ä×ø±ê
-			vector<double> vtx0 = invertexs[vtxIndex0];
-			vector<double> vtx1 = invertexs[vtxIndex1];
-			vector<double> vtx2 = invertexs[vtxIndex2];
-			//Èı½ÇÃæÈı¸ö¶¥µãuv¿Õ¼ä×ø±ê
-			vector<double> uv0 = inuvs[uvIndex0];
-			vector<double> uv1 = inuvs[uvIndex1];
-			vector<double> uv2 = inuvs[uvIndex2];
-
+			//ä¸‰è§’å½¢ä¸‰ä¸ªé¡¶ç‚¹çš„ä¸‰ç»´ç©ºé—´åæ ‡(æ³¨æ„è¯»å–çš„æ–‡ä»¶ä¸­ç´¢å¼•æ˜¯ä»1å¼€å§‹çš„)
+			vector<double> vtx0 = inPoint_diffs[vtxIndex0-1];		//æ³¨æ„è¿™é‡Œé¢çš„diffsæ˜¯æŒ‰ç…§ç‚¹åºæ’åˆ—çš„
+			vector<double> vtx1 = inPoint_diffs[vtxIndex1-1];
+			vector<double> vtx2 = inPoint_diffs[vtxIndex2-1];
+			//ä¸‰è§’å½¢ä¸‰ä¸ªé¡¶ç‚¹çš„UVç©ºé—´åæ ‡
+			vector<double> uv0 = inuvs[uvIndex0-1];
+			vector<double> uv1 = inuvs[uvIndex1-1];
+			vector<double> uv2 = inuvs[uvIndex2-1];
+			//ä¸‰è§’å½¢ä¸‰ä¸ªé¡¶ç‚¹çš„åƒç´ ç©ºé—´åæ ‡
+			vector<int> pixel0 = GetPixelCoord(mat.rows, mat.cols, uv0);
+			vector<int> pixel1 = GetPixelCoord(mat.rows, mat.cols, uv1);
+			vector<int> pixel2 = GetPixelCoord(mat.rows, mat.cols, uv2);
+			
+			vector<int> bbox = GetTrianglePixelBoundingBox(pixel0, pixel1, pixel2);
+			//cout << bbox[0] << " " << bbox[1] << " " << bbox[2] << " " << bbox[3] << endl;
+			/*Vec4b& bgra0 = mat.at<Vec4b>(pixel0[0], pixel0[1]);
+			Vec4b& bgra1 = mat.at<Vec4b>(pixel1[0], pixel1[1]);
+			Vec4b& bgra2 = mat.at<Vec4b>(pixel2[0], pixel2[1]);
+			bgra0[2] = 255;
+			bgra1[2] = 255;
+			bgra2[2] = 255;*/
+			
+			for (int y = bbox[1]; y < bbox[3]; y++)
+			{
+				for (int x = bbox[0]; x < bbox[2]; x++)
+				{
+					vector<int> inpixel = { x,y };
+					vector<double> pixelRatio = CalculateAreaRatio(pixel0, pixel1, pixel2, inpixel);
+					//cout << pixelRatio[0] << " " << pixelRatio[1] << pixelRatio[2] << endl;
+					//vector<double> pixelRatio = { 0.2,0.3,0.5 };
+					if ((pixelRatio[0] + pixelRatio[1] + pixelRatio[2]) <= 1)
+					{
+						Vec4b& bgra = mat.at<Vec4b>(x, y);
+						bgra[2] = vtx0[0] * pixelRatio[0] + vtx1[0] * pixelRatio[1] + vtx2[0] * pixelRatio[2];
+						bgra[0] = vtx0[1] * pixelRatio[0] + vtx1[1] * pixelRatio[1] + vtx2[1] * pixelRatio[2];
+						bgra[1] = vtx0[2] * pixelRatio[0] + vtx1[2] * pixelRatio[1] + vtx2[2] * pixelRatio[2];
+					}
+				}
+			}
 		}
-		
 	}
 }
 
@@ -145,12 +175,34 @@ void CreateTextTo(vector<vector<double>> inPoint_diffs, int insize, string infil
 	try
 	{
 		imwrite(infilename, mat, compression_params);
-		//imshow("Éú³ÉµÄPNGÍ¼", mat);
+		//imshow("Ã‰ÃºÂ³Ã‰ÂµÃ„PNGÃÂ¼", mat);
 		//waitKey(0);
 	}
 	catch (const std::exception& ex)
 	{
-		fprintf(stderr, "×ª»»´íÎó", ex.what());
+		fprintf(stderr, "Ã—ÂªÂ»Â»Â´Ã­ÃÃ³", ex.what());
+	}
+}
+
+void CreateTextTo(vector<vector<double>> inPoint_diffs, vector<vector<double>> inuvs, vector<vector<int>> inface_vertindex, vector<vector<int>> inface_uvindex, int insize, string infilename)
+{
+	Mat mat(insize, insize, CV_8UC4);
+	createAlphaMat(inPoint_diffs, inuvs, inface_vertindex, inface_uvindex, mat);
+	//createAlphaMat(inPoint_diffs, mat);
+	//mat.at<Vec4b>(0, 0) = {10,20,100,100};
+	//mat.at<Vec4b>(1, 0) ={200,250,10,200};
+	vector<int>compression_params;
+	compression_params.push_back(IMWRITE_PNG_COMPRESSION);
+	compression_params.push_back(9);
+	try
+	{
+		imwrite(infilename, mat, compression_params);
+		//imshow("Ã‰ÃºÂ³Ã‰ÂµÃ„PNGÃÂ¼", mat);
+		//waitKey(0);
+	}
+	catch (const std::exception& ex)
+	{
+		fprintf(stderr, "Ã—ÂªÂ»Â»Â´Ã­ÃÃ³", ex.what());
 	}
 }
 
@@ -160,11 +212,11 @@ void LoadObj(string inpath, vector<vector<double>>& vectexs, vector<vector<doubl
 	infile.open(inpath);
 	if (!infile.is_open())
 	{
-		cout << "¶ÁÈ¡ÎÄ¼şÊ§°Ü!" << endl;
+		cout << "open failed!" << endl;
 	}
 	else
 	{
-		cout << "³É¹¦´ò¿ªÎÄ¼ş!" << endl;
+		cout << "data loading..." << endl;
 		string sline, s0;
 		while (getline(infile, sline))
 		{
@@ -197,10 +249,10 @@ void LoadObj(string inpath, vector<vector<double>>& vectexs, vector<vector<doubl
 				istringstream ins(sline);
 				vector<int> tempFaceVertexIndex(4);
 				vector<int> tempFaceUVs(4);
-				//¶ÁÈ¡¶¥µãºÍuvË÷Òı
-				ins >> s0;//Ê×ÏÈ°ÑfÈ¥µô
+				//Â¶ÃÃˆÂ¡Â¶Â¥ÂµÃ£ÂºÃuvÃ‹Ã·Ã’Ã½
+				ins >> s0;//ÃŠÃ—ÃÃˆÂ°Ã‘fÃˆÂ¥ÂµÃ´
 				string s1;
-				for (int i = 0; i < 4; i++)	//ÓĞµÄÄ£ĞÍÊÇËÄµãÃæ,ÈıµãÃæµÄÄ£ĞÍÖ±½Ó½Ø¶ÏµôµÚËÄ¸öÖµ¾ÍĞĞÁË
+				for (int i = 0; i < 4; i++)	//Ã“ÃÂµÃ„Ã„Â£ÃÃÃŠÃ‡Ã‹Ã„ÂµÃ£ÃƒÃ¦,ÃˆÃ½ÂµÃ£ÃƒÃ¦ÂµÃ„Ã„Â£ÃÃÃ–Â±Â½Ã“Â½Ã˜Â¶ÃÂµÃ´ÂµÃšÃ‹Ã„Â¸Ã¶Ã–ÂµÂ¾ÃÃÃÃÃ‹
 				{
 					ins >> s1;
 					int a = 0, k;
@@ -236,7 +288,7 @@ vector<double> CalculateInterpolation(vector<vector<double>> invertexs,vector<ve
 		int vertindex0 = inface_vertindex[i][0];
 		int vertindex1 = inface_vertindex[i][1];
 		int vertindex2 = inface_vertindex[i][2];
-		vector<double> uv0 = inuvs[uvindex0 - 1];	//×¢ÒâfÃæÌá¹©µÄĞòºÅ¶¼ÊÇ´Ó1¿ªÊ¼µÄ
+		vector<double> uv0 = inuvs[uvindex0 - 1];	//Ã—Â¢Ã’Ã¢fÃƒÃ¦ÃŒÃ¡Â¹Â©ÂµÃ„ÃÃ²ÂºÃ…Â¶Â¼ÃŠÃ‡Â´Ã“1Â¿ÂªÃŠÂ¼ÂµÃ„
 		vector<double> uv1 = inuvs[uvindex1 - 1];
 		vector<double> uv2 = inuvs[uvindex2 - 1];
 		vector<double> P0 = invertexs[vertindex0 - 1];
@@ -244,9 +296,9 @@ vector<double> CalculateInterpolation(vector<vector<double>> invertexs,vector<ve
 		vector<double> P2 = invertexs[vertindex2 - 1];
 
 		vector<double> TriRatio = CalculateAreaRatio(uv0, uv1, uv2, inUV);
-		if ((TriRatio[0] + TriRatio[1] + TriRatio[2]) <= 1)	//Èı¸ö±ÈÖµÖ®ºÍĞ¡ÓÚ1²ÅËµÃ÷µãÔÚÈı½ÇĞÎÄÚ²¿,È»ºó·µ»ØÈı¸ö²åÖµºÍÃæĞòºÅ
+		if ((TriRatio[0] + TriRatio[1] + TriRatio[2]) <= 1)	//ÃˆÃ½Â¸Ã¶Â±ÃˆÃ–ÂµÃ–Â®ÂºÃÃÂ¡Ã“Ãš1Â²Ã…Ã‹ÂµÃƒÃ·ÂµÃ£Ã”ÃšÃˆÃ½Â½Ã‡ÃÃÃ„ÃšÂ²Â¿,ÃˆÂ»ÂºÃ³Â·ÂµÂ»Ã˜ÃˆÃ½Â¸Ã¶Â²Ã¥Ã–ÂµÂºÃÃƒÃ¦ÃÃ²ÂºÃ…
 		{
-			//Ö±½Ó·µ»ØÊÀ½ç×ø±ê(²åÖµÒ²¿ÉÒÔË³´ø·µ»Ø³öÈ¥,ÒÔ±ãºóÆÚ¼ÆËãÆäËûµÄĞÅÏ¢Ê¹ÓÃ)
+			//Ã–Â±Â½Ã“Â·ÂµÂ»Ã˜ÃŠÃ€Â½Ã§Ã—Ã¸Â±Ãª(Â²Ã¥Ã–ÂµÃ’Â²Â¿Ã‰Ã’Ã”Ã‹Â³Â´Ã¸Â·ÂµÂ»Ã˜Â³Ã¶ÃˆÂ¥,Ã’Ã”Â±Ã£ÂºÃ³Ã†ÃšÂ¼Ã†Ã‹Ã£Ã†Ã¤Ã‹Ã»ÂµÃ„ÃÃ…ÃÂ¢ÃŠÂ¹Ã“Ãƒ)
 			result[0] = P0[0] * TriRatio[0] + P1[0] * TriRatio[1] + P2[0] * TriRatio[2];
 			result[1] = P0[1] * TriRatio[0] + P1[1] * TriRatio[1] + P2[1] * TriRatio[2];
 			result[2] = P0[2] * TriRatio[0] + P1[2] * TriRatio[1] + P2[2] * TriRatio[2];
@@ -263,10 +315,23 @@ vector<double> CalculateInterpolation(vector<vector<double>> invertexs,vector<ve
 vector<double> CalculateAreaRatio(vector<double> uv0, vector<double> uv1, vector<double> uv2, vector<double> inUV)
 {
 	vector<double> result = { 0,0,0 };
-	double S = 0.5 * abs((uv1[0] - uv0[0]) * (uv2[1] - uv0[1]) - (uv1[1] - uv0[1]) * (uv2[0] - uv0[0]));//Èı½ÇĞÎ×ÜÃæ»ı
-	double s0 = 0.5*abs((uv1[0] - inUV[0]) * (uv2[1] - inUV[1]) - (uv1[1] - inUV[1]) * (uv2[0] - inUV[0]));//Óëuv0¶ÔÓ¦µÄÈı½ÇĞÎÃæ»ı
-	double s1 = 0.5 * abs((inUV[0] - uv0[0]) * (uv2[1] - uv0[1]) - (inUV[1] - uv0[1]) * (uv2[0] - uv0[0]));//Óëuv1¶ÔÓ¦µÄÈı½ÇĞÎÃæ»ı
-	double s2 = 0.5 * abs((uv1[0] - uv0[0]) * (inUV[1] - uv0[1]) - (uv1[1] - uv0[1]) * (inUV[0] - uv0[0]));//Óëuv2¶ÔÓ¦µÄÈı½ÇĞÎÃæ»ı
+	double S = 0.5 * abs((uv1[0] - uv0[0]) * (uv2[1] - uv0[1]) - (uv1[1] - uv0[1]) * (uv2[0] - uv0[0]));//ÃˆÃ½Â½Ã‡ÃÃÃ—ÃœÃƒÃ¦Â»Ã½
+	double s0 = 0.5*abs((uv1[0] - inUV[0]) * (uv2[1] - inUV[1]) - (uv1[1] - inUV[1]) * (uv2[0] - inUV[0]));//Ã“Ã«uv0Â¶Ã”Ã“Â¦ÂµÃ„ÃˆÃ½Â½Ã‡ÃÃÃƒÃ¦Â»Ã½
+	double s1 = 0.5 * abs((inUV[0] - uv0[0]) * (uv2[1] - uv0[1]) - (inUV[1] - uv0[1]) * (uv2[0] - uv0[0]));//Ã“Ã«uv1Â¶Ã”Ã“Â¦ÂµÃ„ÃˆÃ½Â½Ã‡ÃÃÃƒÃ¦Â»Ã½
+	double s2 = 0.5 * abs((uv1[0] - uv0[0]) * (inUV[1] - uv0[1]) - (uv1[1] - uv0[1]) * (inUV[0] - uv0[0]));//Ã“Ã«uv2Â¶Ã”Ã“Â¦ÂµÃ„ÃˆÃ½Â½Ã‡ÃÃÃƒÃ¦Â»Ã½
+	result[0] = s0 / S;
+	result[1] = s1 / S;
+	result[2] = s2 / S;
+	return result;
+}
+
+vector<double> CalculateAreaRatio(vector<int> pixel0, vector<int> pixel1, vector<int> pixel2, vector<int> inpixel)
+{
+	vector<double> result = { 0,0,0 };
+	double S = abs((pixel1[0] - pixel0[0]) * (pixel2[1] - pixel0[1]) - (pixel1[1] - pixel0[1]) * (pixel2[0] - pixel0[0]));//ÃˆÃ½Â½Ã‡ÃÃÃ—ÃœÃƒÃ¦Â»Ã½
+	double s0 = abs((pixel1[0] - inpixel[0]) * (pixel2[1] - inpixel[1]) - (pixel1[1] - inpixel[1]) * (pixel2[0] - inpixel[0]));//Ã“Ã«uv0Â¶Ã”Ã“Â¦ÂµÃ„ÃˆÃ½Â½Ã‡ÃÃÃƒÃ¦Â»Ã½
+	double s1 = abs((inpixel[0] - pixel0[0]) * (pixel2[1] - pixel0[1]) - (inpixel[1] - pixel0[1]) * (pixel2[0] - pixel0[0]));//Ã“Ã«uv1Â¶Ã”Ã“Â¦ÂµÃ„ÃˆÃ½Â½Ã‡ÃÃÃƒÃ¦Â»Ã½
+	double s2 = abs((pixel1[0] - pixel0[0]) * (inpixel[1] - pixel0[1]) - (pixel1[1] - pixel0[1]) * (inpixel[0] - pixel0[0]));//Ã“Ã«uv2Â¶Ã”Ã“Â¦ÂµÃ„ÃˆÃ½Â½Ã‡ÃÃÃƒÃ¦Â»Ã½
 	result[0] = s0 / S;
 	result[1] = s1 / S;
 	result[2] = s2 / S;
@@ -279,32 +344,59 @@ void LoadDiffData(string inpath, vector<vector<double>>& Point_diffs)
 	infile.open(inpath);
 	if (!infile.is_open())
 	{
-		cout << "¶ÁÈ¡ÎÄ¼şÊ§°Ü!" << endl;
+		cout << "open failed!" << endl;
 	}
 	else
 	{
-		cout << "¿ªÊ¼¼ÓÔØÊı¾İ" << endl;
+		cout << "data loading..." << endl;
 		string sline;
 		while (getline(infile, sline))
 		{
 			vector<double> tempVector(5);
 			istringstream ins(sline);
-			ins >> tempVector[0] >> tempVector[1] >> tempVector[2] >> tempVector[3] >> tempVector[4];
+			ins >> tempVector[0] >> tempVector[1] >> tempVector[2] >> tempVector[3] >> tempVector[4];		//æŠŠç‚¹çš„UVå€¼æ”¾åœ¨æœ€åé¢2ä½
 			Point_diffs.push_back(tempVector);
 		}
 		infile.close();
-		cout << "¼ÓÔØÍê±Ï" << endl;
+		cout << "loaded over!" << endl;
 	}
 }
 
 vector<int> GetPixelCoord(int inWidth, int inHeight, vector<double> inUV)
 {
 	vector<int> outResult = { 0,0 };
-	outResult[0] = inUV[0] * inWidth;	//Ğ¡Êı²¿·ÖÖ±½Ó½Ø¶Ï
-	outResult[0] = inUV[1] * inHeight;
+	int outResult0 = Round((1 - inUV[1]) * inWidth);	//å››èˆäº”å…¥
+	int outResult1 = Round(inUV[0] * inHeight);
+	outResult0 >= inWidth ? outResult[0] = inWidth-1 : outResult[0] = outResult0;		//å¯¹è¾“å…¥çš„å€¼é’³åˆ¶
+	outResult1 >= inHeight ? outResult[1] = inHeight-1 : outResult[1] = outResult1;
 	return outResult;
 }
 
+vector<int> GetTrianglePixelBoundingBox(vector<int>inpixel0, vector<int>inpixel1, vector<int>inpixel2)
+{
+	vector<int> outBox;
+	int minx = inpixel0[0];
+	int miny = inpixel0[1];
+	int maxx = inpixel0[0];
+	int maxy = inpixel0[1];
+	if (minx > inpixel1[0])minx = inpixel1[0];
+	if (minx > inpixel2[0])minx = inpixel2[0];
+	if (miny > inpixel1[1])miny = inpixel1[1];
+	if (miny > inpixel2[1])miny = inpixel2[1];
+	if (maxx < inpixel1[0])maxx = inpixel1[0];
+	if (maxx < inpixel2[0])maxx = inpixel2[0];
+	if (maxy < inpixel1[1])maxy = inpixel1[1];
+	if (maxy < inpixel2[1])maxy = inpixel2[1];
+	outBox.push_back(minx);
+	outBox.push_back(miny);
+	outBox.push_back(maxx);
+	outBox.push_back(maxy);
+	return outBox;
+}
 
+int Round(double inx)
+{
+	return (inx > 0.0) ? floor(inx + 0.5) : ceil(inx - 0.5);
+}
 
 
