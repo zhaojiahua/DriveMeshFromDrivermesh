@@ -3,6 +3,7 @@
 #include "cmath"
 
 
+
 using namespace cv;
 using namespace std;
 
@@ -15,33 +16,31 @@ int main()
 
 	////×¢ÒâOpenCV¶ÁÈ¡Í¼Æ¬µÄ·½Ê½ÊÇ´ÓÉÏÍùÏÂ°´ÐÐ¶ÁÈ¡ÏñËØ,Ã¿´Î°´Ë³Ðò¶ÁÈ¡3¸öÍ¨µÀ
 
-	//for (int i = 524288; i < 1048576; i++)
+	//for (int i = 0; i < 1048576; i++)
 	//{
-	//	if (img_bytes[i] != 0)
+	//	if (img_bytes[i] < 0)
 	//	{
 	//		cout << (int)img_bytes[i] << " ";
 	//	}
 	//}
 	
-	//ÌáÈ¡Çý¶¯Ä£ÐÍDrµÄobjÐÅÏ¢
+	//load Dr.obj
 	vector<vector<double>> vertexs_Dr = {};
 	vector<vector<double>> normals_Dr = {};
 	vector<vector<double>> uvs_Dr = {};
 	vector<vector<int>> faces_vertexs_Dr = {};
 	vector<vector<int>> faces_uvs_Dr = {};		//×¢ÒâÕâÀïµÃµ½µÄÊÇUVË÷Òý
 	LoadObj("D:/UE5_Project/TTSAPro/AssetsFromOther/Dr.obj", vertexs_Dr, normals_Dr, uvs_Dr, faces_vertexs_Dr, faces_uvs_Dr);
-	//ÌáÈ¡°®ÏÄÄ£ÐÍµÄobjÐÅÏ¢
+	//load Ax.obj
 	vector<vector<double>> vertexs_Ax = {};
 	vector<vector<double>> normals_Ax = {};
 	vector<vector<double>> uvs_Ax = {};
 	vector<vector<int>> faces_vertexs_Ax = {};
 	vector<vector<int>> faces_uvs_Ax = {};
 	LoadObj("D:/UE5_Project/TTSAPro/AssetsFromOther/aixia.obj", vertexs_Ax, normals_Ax, uvs_Ax, faces_vertexs_Ax, faces_uvs_Ax);
-
 	vector<vector<double>> Point_diffs;
 	LoadDiffData("D:/UE5_Project/TTSAPro/AssetsFromOther/axPatDr50.txt", Point_diffs);
-
-	CreateTextTo(Point_diffs, uvs_Ax, faces_vertexs_Ax, faces_uvs_Ax, 1024, "writetestpng3.png");
+	CreateTextTo(Point_diffs, vertexs_Ax, uvs_Ax, faces_vertexs_Ax, faces_uvs_Ax, 1024, "writetestpng.png", "writetestpngN.png");
 
 	////¼ÆËãËùÓÐµÄUV¶ÔÓ¦µÄ¿Õ¼ä×ø±ê
 	//vector<vector<double>> AxPointAtDr = {};
@@ -74,7 +73,7 @@ void createAlphaMat(vector<vector<double>> inPoint_diffs,Mat& mat)
 	{
 		for (int j = 0; j < mat.cols; ++j)
 		{
-			Vec4b& rgba = mat.at<Vec4b>(i, j);
+			Vec4f& rgba = mat.at<Vec4f>(i, j);
 			rgba[0] = 127;
 			rgba[1] = 127;
 			rgba[2] = 127;
@@ -86,46 +85,82 @@ void createAlphaMat(vector<vector<double>> inPoint_diffs,Mat& mat)
 	{
 		int pixelX = (1 - inPoint_diffs[i][4]) * mat.rows;
 		int pixelY = inPoint_diffs[i][3] * mat.cols;
-		Vec4b& rgba = mat.at<Vec4b>(pixelX, pixelY);
+		Vec4f& rgba = mat.at<Vec4f>(pixelX, pixelY);
 		rgba[0] = inPoint_diffs[i][1];
 		rgba[1] = inPoint_diffs[i][2];
 		rgba[2] = inPoint_diffs[i][0];
 	}
 }
 
-void createAlphaMat(vector<vector<double>> inPoint_diffs, vector<vector<double>> inuvs, vector<vector<int>> inface_vertindex, vector<vector<int>> inface_uvindex, Mat& mat)
+void createAlphaMat(vector<vector<double>> inPoint_diffs, vector<vector<double>> invtxPos, vector<vector<double>> inuvs, vector<vector<int>> inface_vertindex, vector<vector<int>> inface_uvindex, Mat& mat, Mat& matN)
 {
 	//给背景上纯灰色
 	for (int i = 0; i < mat.rows; ++i)
 	{
 		for (int j = 0; j < mat.cols; ++j)
 		{
-			Vec4b& rgba = mat.at<Vec4b>(i, j);
-			rgba[0] = 127;
-			rgba[1] = 127;
-			rgba[2] = 127;
-			rgba[3] = 255;
+			Vec4f& rgba = mat.at<Vec4f>(i, j);
+			rgba[0] = 127.0;
+			rgba[1] = 127.0;
+			rgba[2] = 127.0;
+			rgba[3] = 255.0;
 		}
 	}
 	//ÉÏÉ«(Öð¸öÃæÉÏÉ«¶ø²»ÊÇÖðµãÉÏÉ«)
+	//先声明一个存储法线的数组,和顶点一一对应
+	vector<vector<double>> PntNormals(invtxPos.size(), vector<double>(3, 0));
 	for (int i = 0; i < inface_vertindex.size(); i++)
 	{
-		//ËÄ±ßÐÎÃæ·Ö¸î³ÉÁ½¸öÈý½ÇÐÎ
-		for (int j = 0; j < inface_vertindex[i].size() - 2; j++)	//¶¥µãÊý-2=ÃæÊý
+		//计算面法线
+		int vtxIndex0 = inface_vertindex[i][0];
+		int vtxIndex1 = inface_vertindex[i][1];
+		int vtxIndex2 = inface_vertindex[i][2];		//取出前三个点来计算面法线
+		vector<double> vtx0_differ = inPoint_diffs[vtxIndex0 - 1];
+		vector<double> vtx1_differ = inPoint_diffs[vtxIndex1 - 1];		//三角形三个顶点的三维空间坐标(注意读取的文件中索引是从1开始的)
+		vector<double> vtx2_differ = inPoint_diffs[vtxIndex2 - 1];
+		vector<double> vtx0 = invtxPos[vtxIndex0 - 1];
+		vector<double> vtx1 = invtxPos[vtxIndex1 - 1];
+		vector<double> vtx2 = invtxPos[vtxIndex2 - 1];
+		vector<double> newvtx0 = { vtx0[0] + vtx0_differ[0],vtx0[1] + vtx0_differ[1], vtx0[2] + vtx0_differ[2] };
+		vector<double> newvtx1 = { vtx1[0] + vtx1_differ[0],vtx1[1] + vtx1_differ[1], vtx1[2] + vtx1_differ[2] };
+		vector<double> newvtx2 = { vtx2[0] + vtx2_differ[0],vtx2[1] + vtx2_differ[1], vtx2[2] + vtx2_differ[2] };
+		vector<double> side1 = { newvtx1[0] - newvtx0[0],newvtx1[1] - newvtx0[1],newvtx1[2] - newvtx0[2] };
+		vector<double> side2 = { newvtx2[0] - newvtx0[0],newvtx2[1] - newvtx0[1],newvtx2[2] - newvtx0[2] };
+		vector <double> faceN = Normalize(CrossProduct(side1, side2));		//向量叉乘算出面法线
+		for (int index = 0; index < inface_vertindex[i].size(); index++)		//由面提供的法线给此面的每一个顶点法线累加最后就得到法线列表
+		{
+			int tempVtxIndex = inface_vertindex[i][index] - 1;
+			PntNormals[tempVtxIndex][0] += faceN[0];
+			PntNormals[tempVtxIndex][1] += faceN[1];
+			PntNormals[tempVtxIndex][2] += faceN[2];
+		}
+	}
+	//for (int it = 0; it < PntNormals.size(); it++)
+	//{
+	//	cout << PntNormals[it][0] << " " << PntNormals[it][1] << " " << PntNormals[it][2] << endl;
+	//}
+	for (int i = 0; i < inface_vertindex.size(); i++)
+	{
+		//多边形都转换成三角形计算
+		for (int j = 0; j < inface_vertindex[i].size() - 2; j++)	//顶点数-2=三角形面数
 		{
 			//ÏÈËã³öÈý¸ö¶¥µãµÄÆÁÄ»×ø±êºÍ²îÖµÐÅÏ¢
 			//Èý½ÇÃæµÄ¶¥µãË÷Òý
-			int vtxIndex0=inface_vertindex[i][0];
-			int vtxIndex1 = inface_vertindex[i][j+1];
-			int vtxIndex2 = inface_vertindex[i][j+2];
-			//Èý½ÇÃæµÄUVË÷Òý
+			int vtxIndex0 = inface_vertindex[i][0];
+			int vtxIndex1 = inface_vertindex[i][j + 1];
+			int vtxIndex2 = inface_vertindex[i][j + 2];
+			//注意这里面的diffs是按照点序排列的
+			vector<double> vtx0_differ = inPoint_diffs[vtxIndex0 - 1];
+			vector<double> vtx1_differ = inPoint_diffs[vtxIndex1 - 1];
+			vector<double> vtx2_differ = inPoint_diffs[vtxIndex2 - 1];
+			//顶点的法线
+			vector<double> vtx0_N = Normalize(PntNormals[vtxIndex0 - 1]);
+			vector<double> vtx1_N = Normalize(PntNormals[vtxIndex1 - 1]);
+			vector<double> vtx2_N = Normalize(PntNormals[vtxIndex2 - 1]);
+			//查找UV索引
 			int uvIndex0 = inface_uvindex[i][0];
 			int uvIndex1 = inface_uvindex[i][j + 1];
 			int uvIndex2 = inface_uvindex[i][j + 2];
-			//三角形三个顶点的三维空间坐标(注意读取的文件中索引是从1开始的)
-			vector<double> vtx0 = inPoint_diffs[vtxIndex0-1];		//注意这里面的diffs是按照点序排列的
-			vector<double> vtx1 = inPoint_diffs[vtxIndex1-1];
-			vector<double> vtx2 = inPoint_diffs[vtxIndex2-1];
 			//三角形三个顶点的UV空间坐标
 			vector<double> uv0 = inuvs[uvIndex0-1];
 			vector<double> uv1 = inuvs[uvIndex1-1];
@@ -136,13 +171,6 @@ void createAlphaMat(vector<vector<double>> inPoint_diffs, vector<vector<double>>
 			vector<int> pixel2 = GetPixelCoord(mat.rows, mat.cols, uv2);
 			
 			vector<int> bbox = GetTrianglePixelBoundingBox(pixel0, pixel1, pixel2);
-			//cout << bbox[0] << " " << bbox[1] << " " << bbox[2] << " " << bbox[3] << endl;
-			/*Vec4b& bgra0 = mat.at<Vec4b>(pixel0[0], pixel0[1]);
-			Vec4b& bgra1 = mat.at<Vec4b>(pixel1[0], pixel1[1]);
-			Vec4b& bgra2 = mat.at<Vec4b>(pixel2[0], pixel2[1]);
-			bgra0[2] = 255;
-			bgra1[2] = 255;
-			bgra2[2] = 255;*/
 			
 			for (int y = bbox[1]; y < bbox[3]; y++)
 			{
@@ -154,10 +182,14 @@ void createAlphaMat(vector<vector<double>> inPoint_diffs, vector<vector<double>>
 					//vector<double> pixelRatio = { 0.2,0.3,0.5 };
 					if ((pixelRatio[0] + pixelRatio[1] + pixelRatio[2]) <= 1)
 					{
-						Vec4b& bgra = mat.at<Vec4b>(x, y);
-						bgra[2] = vtx0[0] * pixelRatio[0] + vtx1[0] * pixelRatio[1] + vtx2[0] * pixelRatio[2];
-						bgra[0] = vtx0[1] * pixelRatio[0] + vtx1[1] * pixelRatio[1] + vtx2[1] * pixelRatio[2];
-						bgra[1] = vtx0[2] * pixelRatio[0] + vtx1[2] * pixelRatio[1] + vtx2[2] * pixelRatio[2];
+						Vec4f& bgra = mat.at<Vec4f>(x, y);
+						bgra[2] = vtx0_differ[0] * pixelRatio[0] + vtx1_differ[0] * pixelRatio[1] + vtx2_differ[0] * pixelRatio[2];
+						bgra[0] = vtx0_differ[1] * pixelRatio[0] + vtx1_differ[1] * pixelRatio[1] + vtx2_differ[1] * pixelRatio[2];
+						bgra[1] = vtx0_differ[2] * pixelRatio[0] + vtx1_differ[2] * pixelRatio[1] + vtx2_differ[2] * pixelRatio[2];
+						Vec3f& N = matN.at<Vec3f>(x, y);
+						N[2] = 100*(vtx0_N[0] * pixelRatio[0] + vtx1_N[0] * pixelRatio[1] + vtx2_N[0] * pixelRatio[2] + 1);//法线取值范围+1映射到[0-2]
+						N[0] = 100*(vtx0_N[1] * pixelRatio[0] + vtx1_N[1] * pixelRatio[1] + vtx2_N[1] * pixelRatio[2] + 1);
+						N[1] = 100*(vtx0_N[2] * pixelRatio[0] + vtx1_N[2] * pixelRatio[1] + vtx2_N[2] * pixelRatio[2] + 1);
 					}
 				}
 			}
@@ -184,19 +216,19 @@ void CreateTextTo(vector<vector<double>> inPoint_diffs, int insize, string infil
 	}
 }
 
-void CreateTextTo(vector<vector<double>> inPoint_diffs, vector<vector<double>> inuvs, vector<vector<int>> inface_vertindex, vector<vector<int>> inface_uvindex, int insize, string infilename)
+void CreateTextTo(vector<vector<double>> inPoint_diffs, vector<vector<double>> invtxs, vector<vector<double>> inuvs, vector<vector<int>> inface_vertindex, vector<vector<int>> inface_uvindex, int insize, string infilename, string infilenameN)
 {
-	Mat mat(insize, insize, CV_8UC4);
-	createAlphaMat(inPoint_diffs, inuvs, inface_vertindex, inface_uvindex, mat);
+	Mat mat(insize, insize, CV_32FC4);
+	Mat matN(insize, insize, CV_32FC3);
+	createAlphaMat(inPoint_diffs, invtxs, inuvs, inface_vertindex, inface_uvindex, mat, matN);
 	//createAlphaMat(inPoint_diffs, mat);
-	//mat.at<Vec4b>(0, 0) = {10,20,100,100};
-	//mat.at<Vec4b>(1, 0) ={200,250,10,200};
 	vector<int>compression_params;
 	compression_params.push_back(IMWRITE_PNG_COMPRESSION);
 	compression_params.push_back(9);
 	try
 	{
 		imwrite(infilename, mat, compression_params);
+		imwrite(infilenameN, matN, compression_params);
 		//imshow("Éú³ÉµÄPNGÍ¼", mat);
 		//waitKey(0);
 	}
@@ -399,4 +431,14 @@ int Round(double inx)
 	return (inx > 0.0) ? floor(inx + 0.5) : ceil(inx - 0.5);
 }
 
+vector<double> CrossProduct(vector<double>invector1, vector<double> invector2)
+{
+	return { invector1[1] * invector2[2] - invector2[1] * invector1[2], invector2[0] * invector1[2] - invector1[0] * invector2[2], invector1[0] * invector2[1] - invector2[0] * invector1[1] };
+}
+
+vector <double> Normalize(vector<double> inVector)
+{
+	double vectorLen = sqrt(pow(inVector[0], 2) + pow(inVector[1], 2) + pow(inVector[2], 2));
+	return { inVector[0] / vectorLen, inVector[1] / vectorLen, inVector[2] / vectorLen };
+}
 
