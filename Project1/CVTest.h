@@ -37,3 +37,5 @@ int Round(double inx);		//四舍五入函数
 
 vector<double> CrossProduct(vector<double>invector1, vector<double> invector2);
 vector <double> Normalize(vector<double> inVector);
+
+void WriteToFile(string outfilepath, vector<vector<double>> outcontent);

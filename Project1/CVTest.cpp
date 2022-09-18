@@ -135,10 +135,7 @@ void createAlphaMat(vector<vector<double>> inPoint_diffs, vector<vector<double>>
 			PntNormals[tempVtxIndex][2] += faceN[2];
 		}
 	}
-	//for (int it = 0; it < PntNormals.size(); it++)
-	//{
-	//	cout << PntNormals[it][0] << " " << PntNormals[it][1] << " " << PntNormals[it][2] << endl;
-	//}
+	//WriteToFile("vtxNormal.txt", PntNormals);
 	for (int i = 0; i < inface_vertindex.size(); i++)
 	{
 		//多边形都转换成三角形计算
@@ -440,5 +437,16 @@ vector <double> Normalize(vector<double> inVector)
 {
 	double vectorLen = sqrt(pow(inVector[0], 2) + pow(inVector[1], 2) + pow(inVector[2], 2));
 	return { inVector[0] / vectorLen, inVector[1] / vectorLen, inVector[2] / vectorLen };
+}
+
+void WriteToFile(string outfilepath, vector<vector<double>> outcontent)
+{
+	ofstream destFile(outfilepath, ios::out);
+	if (!destFile) { cout << "error opening destination file." << endl; }
+	for (int it = 0; it < outcontent.size(); it++)
+	{
+		destFile << outcontent[it][0] << " " << outcontent[it][1] << " " << outcontent[it][2] << endl;
+	}
+	destFile.close();
 }
 
